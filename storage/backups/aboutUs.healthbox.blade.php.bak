@@ -1,0 +1,628 @@
+@extends(welcomeTheme().'layouts.app') @section('title')
+<title>{{$page->seo_title?:websiteTitle($page->name)}}</title>
+@endsection @section('SEO')
+<meta name="title" property="og:title" content="{{$page->seo_title?:websiteTitle($page->name)}}" />
+<meta name="description" property="og:description" content="{!!$page->seo_description?:general()->meta_description!!}" />
+<meta name="keywords" content="{{$page->seo_keyword?:general()->meta_keyword}}" />
+<meta name="image" property="og:image" content="{{asset($page->image())}}" />
+<meta name="url" property="og:url" content="{{route('pageView',$page->slug?:'no-title')}}" />
+<link rel="canonical" href="{{route('pageView',$page->slug?:'no-title')}}">
+@endsection
+@push('css')
+<style>
+/* About Page Main Container */
+.about-page {
+    padding: 40px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e8 100%);
+}
+
+/* About Hero Section */
+.about-hero-section {
+    margin-bottom: 50px;
+}
+
+.about-hero-content {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #2c5530, #4a7c59);
+    border-radius: 15px;
+    color: white;
+}
+
+.about-main-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.about-hero-text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Mission Section */
+.mission-section, .bengali-about-section {
+    margin-bottom: 50px;
+}
+
+.mission-content, .bengali-about-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.mission-content p, .bengali-about-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Products Section */
+.about-products-section {
+    margin-bottom: 60px;
+    background: white;
+    padding: 50px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.about-products-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+}
+
+/* Product Item Rows */
+.product-item-row {
+    margin-bottom: 50px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-item-row:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+/* Product Image Container */
+.product-image-container {
+    padding: 30px;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    text-align: center;
+}
+
+.product-about-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.product-image-container:hover .product-about-image {
+    transform: scale(1.02);
+}
+
+/* Desktop specific styling for larger images */
+@media (min-width: 992px) {
+    .product-about-image {
+        max-width: 700px;
+        height: 400px;
+        object-fit: contain;
+    }
+    
+    .product-image-container {
+        padding: 40px;
+    }
+}
+
+/* Large desktop screens - even larger images */
+@media (min-width: 1200px) {
+    .product-about-image {
+        max-width: 800px;
+        height: 450px;
+        object-fit: contain;
+    }
+    
+    .product-image-container {
+        padding: 50px;
+    }
+}
+
+/* Product Info Container */
+.product-info-container {
+    padding: 40px;
+    background: white;
+    border-radius: 0 0 20px 20px;
+}
+
+.product-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c5530;
+    margin-bottom: 25px;
+}
+
+.product-features, .product-benefits, .product-why-choose {
+    margin-bottom: 25px;
+}
+
+.product-features h4, .product-benefits h4, .product-why-choose h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c5530;
+    margin-bottom: 15px;
+}
+
+.product-features ul, .product-benefits ul, .product-why-choose ul {
+    list-style: none;
+    padding: 0;
+}
+
+.product-features li, .product-benefits li, .product-why-choose li {
+    padding: 8px 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #555;
+    position: relative;
+    padding-left: 25px;
+}
+
+.product-features li:before, .product-benefits li:before, .product-why-choose li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #4a7c59;
+    font-weight: bold;
+}
+
+.product-price {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.product-price .weight, .product-price .price {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c5530;
+    margin-bottom: 5px;
+}
+
+/* Advantages Section */
+.advantages-section {
+    margin-bottom: 50px;
+}
+
+.advantages-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.advantages-list {
+    list-style: none;
+    padding: 0;
+}
+
+.advantages-list li {
+    padding: 12px 0;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+.advantages-list li i {
+    color: #4a7c59;
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+/* Responsive Design for About Page */
+@media (max-width: 991.98px) {
+    .about-main-title {
+        font-size: 2rem;
+    }
+    
+    .about-hero-text {
+        font-size: 1.1rem;
+    }
+    
+    .mission-content, .bengali-about-content, .advantages-content {
+        padding: 30px 20px;
+    }
+    
+    .product-info-container {
+        padding: 20px;
+    }
+    
+    .product-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .about-page {
+        padding: 20px 0;
+    }
+    
+    .about-hero-content {
+        padding: 30px 15px;
+    }
+    
+    .about-main-title {
+        font-size: 1.8rem;
+    }
+    
+    .mission-content, .bengali-about-content, .advantages-content {
+        padding: 25px 15px;
+    }
+    
+    .about-products-section {
+        padding: 30px 20px;
+        margin-bottom: 40px;
+    }
+    
+    .product-item-row {
+        margin-bottom: 30px;
+        border-radius: 15px;
+    }
+    
+    .product-about-image {
+        height: auto;
+        max-height: 400px;
+        border-radius: 10px;
+    }
+    
+    .product-info-container {
+        padding: 20px;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .product-image-container {
+        padding: 20px;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .product-title {
+        font-size: 1.3rem;
+    }
+}
+</style>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({
+        event: "page_view",
+        page_category: "page",
+        page_title: "{{$page->name}}",
+        page_url: "{{route('pageView',$page->slug?:'no-title')}}"
+    });
+</script>
+@endpush 
+
+@section('contents')
+
+<!-- Start of Page Header -->
+<div class="page-header" style="background-image: url({{asset($page->image())}}); background-position: center; background-size: cover; background-repeat: no-repeat;">
+    <div class="overlayPageHeaderNew">
+        <div class="container">
+            <h1 class="page-title mb-0">{{$page->name}}</h1>
+        </div>
+    </div>
+</div>
+<!-- End of Page Header -->
+
+
+<div class="aboutUsPart">
+    <div class="container">
+        <div class="pageDescription">
+            {!!$page->description!!}
+        </div>
+    </div>
+</div>
+
+
+    {{--<main class="about-page">
+        <div class="container">
+            <!-- Products Section - Now First -->
+            <section class="about-products-section">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="section-title">হেলথবক্স – আমাদের পণ্যসমূহ</h2>
+                    </div>
+                </div>
+
+                <!-- Product 1: Turmeric Powder -->
+                <div class="product-item-row">
+                        <div class="product-image-container">
+                            <img src="img/WhatsApp Image 2025-09-03 at 3.39.37 PM.jpeg" alt="হলুদগুঁড়ো" class="product-about-image">
+                        </div>
+                        <div class="product-info-container">
+                            <h3 class="product-title">১. হলুদগুঁড়ো (Turmeric Powder)</h3>
+                            
+                            <div class="product-features">
+                                <h4>বৈশিষ্ট্য ও মান:</h4>
+                                <ul>
+                                    <li>১০০% প্রাকৃতিক, কোনো কৃত্রিম রং বা রাসায়নিক নেই।</li>
+                                    <li>উচ্চমানের কাঁচামাল থেকে তৈরি।</li>
+                                    <li>হোম-মেড, সতেজভাবে গুঁড়ো করা।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-benefits">
+                                <h4>স্বাস্থ্য উপকারিতা:</h4>
+                                <ul>
+                                    <li>প্রাকৃতিক অ্যান্টিঅক্সিডেন্ট ও প্রদাহরোধী।</li>
+                                    <li>হজমশক্তি বৃদ্ধি করে এবং লিভারের জন্য উপকারী।</li>
+                                    <li>রোগ প্রতিরোধ ক্ষমতা বাড়ায়।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-why-choose">
+                                <h4>কেন হেলথবক্স হলুদ বেছে নেবেন:</h4>
+                                <ul>
+                                    <li>সেরা মানের কাঁচামাল ব্যবহার।</li>
+                                    <li>কোনো সংরক্ষণকারী বা এডিটিভ নেই।</li>
+                                    <li>স্বাভাবিক, উজ্জ্বল রং এবং ঘ্রাণ।</li>
+                                    <li>প্রতিটি প্যাকেজ সতেজতার সাথে নিরাপদে পৌঁছে।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-price">
+                                <span class="weight">ওজন: ২০০ গ্রাম</span>
+                                <span class="price">দাম: ১৬০ টাকা</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 2: Cumin Powder -->
+                <div class="product-item-row">
+                        <div class="product-image-container">
+                            <img src="img/WhatsApp Image 2025-09-03 at 3.39.37 PM (1).jpeg" alt="জিরাগুঁড়ো" class="product-about-image">
+                        </div>
+                        <div class="product-info-container">
+                            <h3 class="product-title">২. জিরাগুঁড়ো (Cumin Powder)</h3>
+                            
+                            <div class="product-features">
+                                <h4>বৈশিষ্ট্য ও মান:</h4>
+                                <ul>
+                                    <li>১০০% প্রাকৃতিক ও হোম-মেড।</li>
+                                    <li>কোনো রং বা কৃত্রিম সংযোজন নেই।</li>
+                                    <li>পাকা ও মানসম্মত জিরা বীজ থেকে তৈরি।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-benefits">
+                                <h4>স্বাস্থ্য উপকারিতা:</h4>
+                                <ul>
+                                    <li>হজমশক্তি উন্নত করে।</li>
+                                    <li>রক্তে শর্করা নিয়ন্ত্রণে সাহায্য করে।</li>
+                                    <li>গ্যাস ও ফোলাভাব কমায়।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-why-choose">
+                                <h4>কেন হেলথবক্স জিরা বেছে নেবেন:</h4>
+                                <ul>
+                                    <li>সেরা মানের কাঁচামাল ব্যবহার।</li>
+                                    <li>কোনো সংরক্ষণকারী বা এডিটিভ নেই।</li>
+                                    <li>স্বাভাবিক, উজ্জ্বল রং এবং ঘ্রাণ।</li>
+                                    <li>প্রতিটি প্যাকেজ সতেজতার সাথে নিরাপদে পৌঁছে।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-price">
+                                <span class="weight">ওজন: ২০০ গ্রাম</span>
+                                <span class="price">দাম: ৩৬০ টাকা</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 3: Coriander Powder -->
+                <div class="product-item-row">
+                        <div class="product-image-container">
+                            <img src="img/WhatsApp Image 2025-09-03 at 3.39.37 PM (2).jpeg" alt="ধনিয়াগুঁড়ো" class="product-about-image">
+                        </div>
+                        <div class="product-info-container">
+                            <h3 class="product-title">৩. ধনিয়াগুঁড়ো (Coriander Powder)</h3>
+                            
+                            <div class="product-features">
+                                <h4>বৈশিষ্ট্য ও মান:</h4>
+                                <ul>
+                                    <li>প্রাকৃতিক, হোম-মেড এবং কোনো রাসায়নিক সংযোজন নেই।</li>
+                                    <li>সতেজ ও মানসম্মত ধনিয়ার বীজ থেকে প্রস্তুত।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-benefits">
+                                <h4>স্বাস্থ্য উপকারিতা:</h4>
+                                <ul>
+                                    <li>হজমশক্তি বাড়ায়।</li>
+                                    <li>রক্তে কোলেস্টেরল কমাতে সাহায্য করে।</li>
+                                    <li>ত্বকের যত্ন ও শরীরের জন্য উপকারী।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-why-choose">
+                                <h4>কেন হেলথবক্স ধনিয়া বেছে নেবেন:</h4>
+                                <ul>
+                                    <li>সেরা মানের কাঁচামাল ব্যবহার।</li>
+                                    <li>কোনো সংরক্ষণকারী বা এডিটিভ নেই।</li>
+                                    <li>স্বাভাবিক, উজ্জ্বল রং এবং ঘ্রাণ।</li>
+                                    <li>প্রতিটি প্যাকেজ সতেজতার সাথে নিরাপদে পৌঁছে।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-price">
+                                <span class="weight">ওজন: ২০০ গ্রাম</span>
+                                <span class="price">দাম: ১২০ টাকা</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product 4: Red Chili Powder -->
+                <div class="product-item-row">
+                        <div class="product-image-container">
+                            <img src="img/WhatsApp Image 2025-09-03 at 3.39.38 PM.jpeg" alt="লালমরিচগুঁড়ো" class="product-about-image">
+                        </div>
+                        <div class="product-info-container">
+                            <h3 class="product-title">৪. লালমরিচগুঁড়ো (Red Chili Powder)</h3>
+                            
+                            <div class="product-features">
+                                <h4>বৈশিষ্ট্য ও মান:</h4>
+                                <ul>
+                                    <li>প্রাকৃতিক, হোম-মেড, কোনো কৃত্রিম রং বা এডিটিভ নেই।</li>
+                                    <li>সেরা মানের লালমরিচ থেকে প্রস্তুত।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-benefits">
+                                <h4>স্বাস্থ্য উপকারিতা:</h4>
+                                <ul>
+                                    <li>হজমে সহায়ক।</li>
+                                    <li>রক্তসঞ্চালন বাড়ায়।</li>
+                                    <li>রোগ প্রতিরোধ ক্ষমতা বৃদ্ধি করে।</li>
+                                    <li>মেটাবলিজম ও ওজন নিয়ন্ত্রণে সহায়ক।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-why-choose">
+                                <h4>কেন হেলথবক্স লালমরিচ বেছে নেবেন:</h4>
+                                <ul>
+                                    <li>সেরা মানের কাঁচামাল ব্যবহার।</li>
+                                    <li>কোনো সংরক্ষণকারী বা এডিটিভ নেই।</li>
+                                    <li>স্বাভাবিক, উজ্জ্বল রং এবং ঘ্রাণ।</li>
+                                    <li>প্রতিটি প্যাকেজ সতেজতার সাথে নিরাপদে পৌঁছে।</li>
+                                </ul>
+                            </div>
+
+                            <div class="product-price">
+                                <span class="weight">ওজন: ২০০ গ্রাম</span>
+                                <span class="price">দাম: ১৬০ টাকা</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Us Section -->
+            <section class="about-hero-section">
+                <div class="container">
+                    
+               
+                <div class="row">
+                    <div class="col-12">
+                        <div class="about-hero-content">
+                            <h1 class="about-main-title">About Us – Health Box</h1>
+                            <p class="about-hero-text">Health Box is your trusted partner in bringing fresh, nutritious, and safe food directly to your hands. We believe that healthy living starts with quality, and our mission is to make nutritious choices easy and accessible for everyone.</p>
+                            <p class="about-hero-text">We are committed to empowering individuals and families to live healthier, more energetic lives. Our packaging is designed to preserve freshness, our sourcing is transparent, and our service is driven by care and reliability. Health Box is not just about delivering food—it's about delivering health, happiness, and peace of mind.</p>
+                            <p class="about-hero-text">Your well-being is our priority, and we work every day to make sure that every box we deliver brings you one step closer to a healthier lifestyle.</p>
+                        </div>
+                    </div>
+                </div>
+                 </div>
+            </section>
+
+            <!-- Mission Section -->
+            <section class="mission-section">
+                <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="mission-content">
+                            <h2 class="section-title">Our Mission</h2>
+                            <p>We are committed to empowering individuals and families to live healthier, more energetic lives. Our packaging is designed to preserve freshness, our sourcing is transparent, and our service is driven by care and reliability. Health Box is not just about delivering food—it's about delivering health, happiness, and peace of mind.</p>
+                            <p>Your well-being is our priority, and we work every day to make sure that every box we deliver brings you one step closer to a healthier lifestyle.</p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </section>
+
+            <!-- Bengali About Section -->
+            <section class="bengali-about-section">
+                <div class="container">
+                    
+               
+                <div class="row">
+                    <div class="col-12">
+                        <div class="bengali-about-content">
+                            <h2 class="section-title">হেলথ বক্স – আমাদের সম্পর্কে</h2>
+                            <p>হেলথ বক্সআপনার বিশ্বস্ত সঙ্গী, যা আপনাকে সরবরাহ করে সতেজ, পুষ্টিকর ও নিরাপদ খাদ্য। আমরা বিশ্বাস করি, সুস্থ জীবন শুরু হয় মানসম্পন্ন খাদ্য দিয়ে, আর আমাদের লক্ষ্য হলো পুষ্টিকর পছন্দকে সকলের জন্য সহজলভ্য ও গ্রহণযোগ্য করা।</p>
+                            <p>আমরা প্রতিশ্রুতিবদ্ধ প্রতিটি মানুষ ও পরিবারকে সুস্থ, প্রাণবন্ত এবং সক্রিয় জীবনযাপন নিশ্চিত করতে। আমাদের প্যাকেজিং তৈরি করা হয়েছে খাদ্যের সতেজতা বজায় রাখতে, আমাদের কাঁচামালের উৎস সম্পূর্ণ স্বচ্ছ, এবং আমাদের সেবা পরিচালিত হয় যত্ন ও বিশ্বাসযোগ্যতার মাধ্যমে।</p>
+                            <p>হেলথ বক্সশুধু খাবার সরবরাহ করে না — আমরা সরবরাহ করি সুস্বাস্থ্য, আনন্দ এবং মানসিক শান্তি। আপনার সুস্থতাই আমাদের অগ্রাধিকার। আমরা প্রতিদিন কাজ করি, যেন আমাদের প্রতিটি বাক্স আপনাকে এক ধাপ এগিয়ে নিয়ে যায় আরও স্বাস্থ্যকর জীবনধারার পথে।</p>
+                        </div>
+                    </div>
+                </div>
+                 </div>
+            </section>
+
+            <!-- Special Advantages Section -->
+            <section class="advantages-section">
+                <div class="container">
+                    
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="advantages-content">
+                            <h2 class="section-title">আমাদের বিশেষ সুবিধা:</h2>
+                            <ul class="advantages-list">
+                                <li><i class="fas fa-check-circle"></i> ১০০% প্রাকৃতিক এবং হোম-মেড।</li>
+                                <li><i class="fas fa-check-circle"></i> কোনো রং, সংরক্ষণকারী বা কৃত্রিম additive নেই।</li>
+                                <li><i class="fas fa-check-circle"></i> উচ্চমানের, সতেজ ও নির্ভরযোগ্য কাঁচামাল ব্যবহার।</li>
+                                <li><i class="fas fa-check-circle"></i> সতেজতা, ঘ্রাণ এবং স্বাদ সর্বোচ্চ মানের।</li>
+                                <li><i class="fas fa-check-circle"></i> স্বাস্থ্যকর ও রোগ প্রতিরোধী।</li>
+                                <li><i class="fas fa-check-circle"></i> প্রতিটি প্যাকেজ নিরাপদ এবং সঠিকভাবে সীলকরা।</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="advantages-content">
+                            <h2 class="section-title">Our Special Advantages:</h2>
+                            <ul class="advantages-list">
+                                <li><i class="fas fa-check-circle"></i> 100% natural and home-made.</li>
+                                <li><i class="fas fa-check-circle"></i> No artificial colors, preservatives, or additives.</li>
+                                <li><i class="fas fa-check-circle"></i> High-quality, fresh, and reliable raw materials.</li>
+                                <li><i class="fas fa-check-circle"></i> Maximum freshness, aroma, and flavor.</li>
+                                <li><i class="fas fa-check-circle"></i> Healthy and immunity-boosting.</li>
+                                <li><i class="fas fa-check-circle"></i> Every package is safe and properly sealed.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </section>
+        </div>
+    </main>--}}
+
+
+
+@endsection @push('js') @endpush
