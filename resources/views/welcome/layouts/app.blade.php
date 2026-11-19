@@ -37,7 +37,7 @@
         <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
         <!-- Custom Css for this Design -->
         <link rel="stylesheet" href="{{asset('welcome/css/style.css')}}" />
-        <link rel="stylesheet" href="{{asset('welcome/css/baseit.css')}}?v=55" />
+        <link rel="stylesheet" href="{{asset('welcome/css/baseit.css')}}?v=61" />
         
         <!-- Google Tag Manager -->
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -260,7 +260,7 @@
 
         <!-- Custom Script for this Design -->
         <script src="{{asset('welcome/js/myScript.js')}}"></script>
-        <script src="{{asset('welcome/js/baseit.js')}}?v=13"></script>
+        <script src="{{asset('welcome/js/baseit.js')}}?v=15"></script>
         
         <script>
               $(document).ready(function () {

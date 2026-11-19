@@ -242,9 +242,12 @@ return [
 
     /* ---------------- Home page ---------------- */
     // Home hero slider: odd slides = image left / text right, even slides = text left / image right
+    // side = where the text sits (the empty part of the image): left | right
+    // pos  = vertical place of the text: center | lower   (bg_pos = optional CSS background-position)
     'slides' => [
         [
             'img'   => 'revslider/baseintro/Web-Design-Base-IT.jpg',
+            'side'  => 'left', 'pos' => 'center', 'bg_pos' => 'right center', 'width' => 36,
             'tag'   => 'Web Solutions',
             'title' => 'Website Design & Development',
             'text'  => 'Our expertise is understanding our clients\' goals and building dynamic, database-driven websites or e-commerce sites that grow their business.',
@@ -252,13 +255,15 @@ return [
         ],
         [
             'img'   => 'revslider/baseintro/Domain-Hosting-Base-IT.jpg',
+            'side'  => 'left', 'pos' => 'lower', 'bg_pos' => 'center top', 'width' => 54,
             'tag'   => 'Domain & Hosting',
             'title' => 'Domain & Hosting Registration',
-            'text'  => 'Register your .com, .net, .org, .info, .biz, .us, .name domain at only Tk. 1200/ per year. There are no fees!',
+            'text'  => 'Get your own .com, .net, .org, .info, .biz, .us, .name, Domain you can register or renew a domain name for just Yearly Tk. 1200/. There are no fees! A domain name is your unique name on the Internet. It allows your company, organization or family to establish an Internet presence, consisting of your personalized email addresses and your own web site address.',
             'slug'  => 'domain-registration',
         ],
         [
             'img'   => 'revslider/baseintro/SMS-Email-Marketing-Base-IT.jpg',
+            'side'  => 'left', 'pos' => 'lower', 'bg_pos' => 'center top',
             'tag'   => 'Digital Marketing',
             'title' => 'SMS & Email Marketing',
             'text'  => 'Mobile phone is the most popular technology of our daily life. This technology has become the main communication media. SMS is such a messaging service which may create instant response through mobile phone.',
@@ -266,6 +271,7 @@ return [
         ],
         [
             'img'   => 'revslider/baseintro/Software-Development-Base-IT.jpg',
+            'side'  => 'right', 'pos' => 'center',
             'tag'   => 'Custom Software',
             'title' => 'Software Development',
             'text'  => 'Award-winning development teams available on short notice, with a proven development process from idea to delivery.',

@@ -144,74 +144,129 @@
 .bi-flash { position: fixed; top: 15px; right: 15px; z-index: 2000; max-width: 420px; }
 .bi-flash .alert { box-shadow: 0 6px 20px rgba(0,0,0,.15); }
 
-/* ---------- Hero slider (full screen, split image / content) ---------- */
+/* ---------- Hero slider: full-width image, text on the image's empty side, reverse slide-in ---------- */
 .bi-hero {
-    --bi-hero-navy: #00233a;
-    --bi-hero-blue: #00466e;
-    --bi-hero-ease: cubic-bezier(.77, 0, .18, 1);
+    --bi-hero-ease: cubic-bezier(.22, .8, .2, 1);
+    --bi-hero-par: cubic-bezier(.77, 0, .18, 1);   /* parallax slide move: slow-fast-slow */
     --bi-hero-time: 7000ms;
+    --bi-hero-shade: 12, 22, 46;          /* deep navy overlay behind the text */
     position: relative;
-    height: calc(100vh - var(--bi-head, 0px));
-    height: calc(100svh - var(--bi-head, 0px));
-    min-height: 540px;
+    aspect-ratio: 1340 / 650;           /* same proportions as the slide images: whole picture visible */
+    min-height: 520px;
     overflow: hidden;
-    background: var(--bi-hero-navy);
+    background: #1c2c52;
     font-family: 'Raleway', sans-serif;
 }
-.bi-hero-slide { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; visibility: hidden; z-index: 1; }
+.bi-hero-slide { position: absolute; inset: 0; visibility: hidden; z-index: 1; overflow: hidden; }
 .bi-hero-slide.is-active { visibility: visible; z-index: 3; }
 .bi-hero-slide.is-leaving { visibility: visible; z-index: 2; }
 
-/* image side */
-.bi-hero-media { position: relative; overflow: hidden; background: var(--bi-hero-blue); clip-path: inset(0 100% 0 0); transition: clip-path 1.15s var(--bi-hero-ease); }
-.bi-hero-img { position: absolute; inset: 0; background-size: cover; background-position: center; transform: scale(1.3); transition: transform 1.8s cubic-bezier(.2, .7, .2, 1); }
-.bi-hero-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,35,58,0) 55%, rgba(0,35,58,.55) 100%), linear-gradient(0deg, rgba(0,35,58,.35), rgba(0,35,58,0) 40%); }
+/* full-width image: fades in over the previous slide, then slowly zooms */
+.bi-hero-bg { position: absolute; inset: 0; background-size: cover; background-repeat: no-repeat; scale: 1.04; transition: scale 9s ease-out; }
+.bi-hero-slide.is-active .bi-hero-bg, .bi-hero-slide.is-leaving .bi-hero-bg { scale: 1.12; }   /* slow zoom while a slide is shown */
 
-/* content side */
-.bi-hero-content { position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 60px 7% 110px; background: radial-gradient(circle at 85% 15%, rgba(0,70,110,.55) 0%, rgba(0,35,58,0) 55%), var(--bi-hero-navy); color: #fff; overflow: hidden; clip-path: inset(0 0 0 100%); transition: clip-path 1s var(--bi-hero-ease) .12s; }
-.bi-hero-content::before { content: ''; position: absolute; left: -60px; top: 50%; width: 120px; height: 120px; border: 2px solid rgba(234,68,0,.35); transform: translateY(-50%) rotate(45deg); }
-.bi-hero-num { position: absolute; right: 5%; bottom: 4%; font: 900 clamp(110px, 16vw, 230px)/1 'Raleway', sans-serif; color: rgba(255,255,255,.04); letter-spacing: -.04em; pointer-events: none; }
-.bi-hero-inner { position: relative; max-width: 560px; }
-.bi-hero-tag { display: inline-flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 700; letter-spacing: .25em; text-transform: uppercase; color: #ff8a4c; margin-bottom: 18px; }
-.bi-hero-tag::before { content: ''; width: 40px; height: 2px; background: #ea4400; }
-.bi-hero-title { font-size: clamp(28px, 3.4vw, 50px); font-weight: 800; line-height: 1.15; letter-spacing: .06em; color: #fff; margin: 0 0 20px; }
-.bi-hero-text { font-size: clamp(15px, 1.15vw, 18px); line-height: 1.85; letter-spacing: .04em; color: rgba(255,255,255,.82); margin: 0 0 34px; }
-.bi-hero-actions { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
-.bi-hero-btn { display: inline-flex; align-items: center; gap: 12px; background: #ea4400; color: #fff !important; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 16px 30px; border-radius: 2px; box-shadow: 0 12px 30px rgba(234,68,0,.35); transition: background .3s, transform .3s, box-shadow .3s; }
-.bi-hero-btn i { transition: transform .3s; }
-.bi-hero-btn:hover { background: #ff5a0e; transform: translateY(-2px); box-shadow: 0 16px 36px rgba(234,68,0,.45); }
-.bi-hero-btn:hover i { transform: translateX(4px); }
-.bi-hero-link { color: #fff !important; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding-bottom: 4px; border-bottom: 2px solid rgba(255,255,255,.35); transition: border-color .3s; }
-.bi-hero-link:hover { border-color: #ea4400; }
+/* soft overlay on the text side only, so the picture stays visible */
+.bi-hero-shade { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1s ease .2s; }
+.bi-hero-slide.is-left .bi-hero-shade { background: linear-gradient(90deg, rgba(var(--bi-hero-shade), .92) 0%, rgba(var(--bi-hero-shade), .84) 40%, rgba(var(--bi-hero-shade), .5) 55%, rgba(var(--bi-hero-shade), 0) 68%); }
+.bi-hero-slide.is-right .bi-hero-shade { background: linear-gradient(270deg, rgba(var(--bi-hero-shade), .92) 0%, rgba(var(--bi-hero-shade), .84) 40%, rgba(var(--bi-hero-shade), .5) 55%, rgba(var(--bi-hero-shade), 0) 68%); }
+.bi-hero-slide.is-active .bi-hero-shade, .bi-hero-slide.is-leaving .bi-hero-shade { opacity: 1; }
 
-/* reverse slide: text left, image right */
-.bi-hero-slide.is-reverse .bi-hero-media { order: 2; clip-path: inset(0 0 0 100%); }
-.bi-hero-slide.is-reverse .bi-hero-content { order: 1; justify-content: flex-end; text-align: right; clip-path: inset(0 100% 0 0); }
-.bi-hero-slide.is-reverse .bi-hero-content::before { left: auto; right: -60px; }
-.bi-hero-slide.is-reverse .bi-hero-num { right: auto; left: 5%; }
-.bi-hero-slide.is-reverse .bi-hero-tag { flex-direction: row-reverse; }
-.bi-hero-slide.is-reverse .bi-hero-actions { justify-content: flex-end; }
-.bi-hero-slide.is-reverse .bi-hero-shade { background: linear-gradient(270deg, rgba(0,35,58,0) 55%, rgba(0,35,58,.55) 100%), linear-gradient(0deg, rgba(0,35,58,.35), rgba(0,35,58,0) 40%); }
+/* text block: left or right half; middle or lower part of the image */
+.bi-hero-content { position: absolute; top: 0; bottom: 0; width: var(--bi-hero-w, 50%); display: flex; align-items: center; padding: 60px 4% 120px 9%; color: #fff; }
+.bi-hero-slide.is-right .bi-hero-content { right: 0; padding: 60px 9% 120px 4%; }
+.bi-hero-slide.pos-lower .bi-hero-content { align-items: flex-start; padding-top: 21.5vw; padding-bottom: 40px; }   /* just below the picture's top graphics */
+.bi-hero-inner { width: 100%; max-width: 680px; }
+.bi-hero-slide.is-left .bi-hero-inner { margin-left: auto; }
 
-/* text items animate in one by one */
-.bi-hero .bi-anim { opacity: 0; transform: translateY(34px); transition: opacity .6s ease, transform .8s cubic-bezier(.2, .7, .2, 1); }
+.bi-hero-title { font-family: 'Raleway', sans-serif; font-size: clamp(26px, 2.35vw, 40px); font-weight: 800; line-height: 1.2; letter-spacing: .14em; color: #fff; text-align: center; margin: 0 0 22px; text-shadow: 0 2px 12px rgba(0,0,0,.25); }
+.bi-hero-text { font-size: clamp(15px, 1.05vw, 18px); line-height: 1.75; letter-spacing: .04em; color: rgba(255,255,255,.92); margin: 0 0 28px; }
+.bi-hero-slide.is-left .bi-hero-text { text-align: right; }
+.bi-hero-slide.is-right .bi-hero-text { text-align: left; }
+.bi-hero-actions { text-align: center; }
+.bi-hero-more { display: inline-block; color: #fff !important; font-size: 16px; font-weight: 700; letter-spacing: .04em; padding: 6px 2px; border-bottom: 2px solid transparent; transition: border-color .3s, color .3s; }
+.bi-hero-more:hover { border-color: #ff5a0e; color: #ffd2bf !important; }
 
-/* active state */
-.bi-hero .bi-hero-slide.is-active .bi-hero-media,
-.bi-hero .bi-hero-slide.is-active .bi-hero-content,
-.bi-hero .bi-hero-slide.is-leaving .bi-hero-media,
-.bi-hero .bi-hero-slide.is-leaving .bi-hero-content { clip-path: inset(0 0 0 0); }
-.bi-hero-slide.is-active .bi-hero-img { transform: scale(1.06); animation: biHeroZoom 14s ease-out 1.8s forwards; }
-.bi-hero-slide.is-active .bi-anim { opacity: 1; transform: none; }
-.bi-hero-slide.is-active .bi-anim:nth-child(1) { transition-delay: .55s; }
-.bi-hero-slide.is-active .bi-anim:nth-child(2) { transition-delay: .7s; }
-.bi-hero-slide.is-active .bi-anim:nth-child(3) { transition-delay: .85s; }
-.bi-hero-slide.is-active .bi-anim:nth-child(4) { transition-delay: 1s; }
-.bi-hero-slide.is-leaving .bi-anim { opacity: 0; transform: translateY(-20px); transition-duration: .35s; transition-delay: 0s; }
-@keyframes biHeroZoom { from { transform: scale(1.06); } to { transform: scale(1.14); } }
+/* =====================================================================
+   SLIDE TRANSITIONS (like Revolution Slider). The JS puts the effect on the slider:
+   data-effect = parallax | curtain | zoom | parallaxv | fadedark   (cycles every change)
+   data-dir    = right (new slide comes from the right / from below)  |  left (from the left / from above)
+   ===================================================================== */
+.bi-hero-slide::after { content: ''; position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 4; }
+.bi-hero.has-moved .bi-hero-slide.is-leaving::after { animation: biDim 1.25s ease both; }
+@keyframes biDim { from { opacity: 0; } to { opacity: .6; } }
+
+/* 1) PARALLAX horizontal: new slide slides in, its picture lags behind (depth), old slide moves 35% */
+.bi-hero.has-moved[data-effect="parallax"][data-dir="right"] .bi-hero-slide.is-active { animation: biInRight 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallax"][data-dir="left"]  .bi-hero-slide.is-active { animation: biInLeft 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallax"][data-dir="right"] .bi-hero-slide.is-active .bi-hero-bg { animation: biBgLagRight 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallax"][data-dir="left"]  .bi-hero-slide.is-active .bi-hero-bg { animation: biBgLagLeft 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallax"][data-dir="right"] .bi-hero-slide.is-leaving { animation: biOutLeft 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallax"][data-dir="left"]  .bi-hero-slide.is-leaving { animation: biOutRight 1.25s var(--bi-hero-par) both; }
+@keyframes biInRight { from { translate: 100% 0; } to { translate: 0 0; } }
+@keyframes biInLeft  { from { translate: -100% 0; } to { translate: 0 0; } }
+@keyframes biBgLagRight { from { translate: -45% 0; } to { translate: 0 0; } }
+@keyframes biBgLagLeft  { from { translate: 45% 0; } to { translate: 0 0; } }
+@keyframes biOutLeft  { to { translate: -35% 0; } }
+@keyframes biOutRight { to { translate: 35% 0; } }
+
+/* 2) PARALLAX vertical: same idea, up / down */
+.bi-hero.has-moved[data-effect="parallaxv"][data-dir="right"] .bi-hero-slide.is-active { animation: biInUp 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallaxv"][data-dir="left"]  .bi-hero-slide.is-active { animation: biInDown 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallaxv"][data-dir="right"] .bi-hero-slide.is-active .bi-hero-bg { animation: biBgLagUp 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallaxv"][data-dir="left"]  .bi-hero-slide.is-active .bi-hero-bg { animation: biBgLagDown 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallaxv"][data-dir="right"] .bi-hero-slide.is-leaving { animation: biOutUp 1.25s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="parallaxv"][data-dir="left"]  .bi-hero-slide.is-leaving { animation: biOutDown 1.25s var(--bi-hero-par) both; }
+@keyframes biInUp   { from { translate: 0 100%; } to { translate: 0 0; } }
+@keyframes biInDown { from { translate: 0 -100%; } to { translate: 0 0; } }
+@keyframes biBgLagUp   { from { translate: 0 -45%; } to { translate: 0 0; } }
+@keyframes biBgLagDown { from { translate: 0 45%; } to { translate: 0 0; } }
+@keyframes biOutUp   { to { translate: 0 -35%; } }
+@keyframes biOutDown { to { translate: 0 35%; } }
+
+/* 3) CURTAIN: new slide opens from the middle like a curtain, its picture settles from a zoom */
+.bi-hero.has-moved[data-effect="curtain"] .bi-hero-slide.is-active { animation: biCurtain 1.3s var(--bi-hero-par) both; }
+.bi-hero.has-moved[data-effect="curtain"] .bi-hero-slide.is-active .bi-hero-bg { animation: biBgSettle 1.6s var(--bi-hero-ease) both; }
+@keyframes biCurtain { from { clip-path: inset(0 50% 0 50%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes biBgSettle { from { translate: 0 0; transform: scale(1.18); } to { transform: none; } }
+
+/* 4) ZOOM: new slide fades in while zooming out; old slide zooms away */
+.bi-hero.has-moved[data-effect="zoom"] .bi-hero-slide.is-active { animation: biZoomIn 1.3s var(--bi-hero-ease) both; }
+.bi-hero.has-moved[data-effect="zoom"] .bi-hero-slide.is-leaving { animation: biZoomAway 1.3s var(--bi-hero-ease) both; }
+@keyframes biZoomIn { from { opacity: 0; transform: scale(1.25); } to { opacity: 1; transform: none; } }
+@keyframes biZoomAway { to { transform: scale(.88); } }
+
+/* 5) FADE THROUGH DARK: old slide goes dark, new slide comes up out of the dark */
+.bi-hero.has-moved[data-effect="fadedark"] .bi-hero-slide.is-active::after { animation: biFromDark 1.3s ease both; }
+.bi-hero.has-moved[data-effect="fadedark"] .bi-hero-slide.is-active { animation: biShowLate 1.3s steps(1, end) both; }
+.bi-hero.has-moved[data-effect="fadedark"] .bi-hero-slide.is-leaving::after { animation: biToDark .65s ease both; }
+@keyframes biToDark { from { opacity: 0; } to { opacity: 1; } }
+@keyframes biFromDark { 0%, 50% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes biShowLate { 0% { opacity: 0; } 50%, 100% { opacity: 1; } }
+
+/* =====================================================================
+   TEXT ENTRANCES (cycle every change): data-text = side | up | zoom | blur
+   title, paragraph and Read More arrive one after another
+   ===================================================================== */
+.bi-hero .bi-anim { opacity: 0; transition: opacity .7s ease, transform 1s var(--bi-hero-ease), filter 1s ease, letter-spacing 1.2s var(--bi-hero-ease); }
+.bi-hero-slide.from-left .bi-anim { transform: translateX(-160px); }
+.bi-hero-slide.from-right .bi-anim { transform: translateX(160px); }
+.bi-hero[data-text="side"][data-dir="right"] .bi-hero-slide .bi-anim { transform: translateX(180px); }
+.bi-hero[data-text="side"][data-dir="left"] .bi-hero-slide .bi-anim { transform: translateX(-180px); }
+.bi-hero[data-text="up"] .bi-hero-slide .bi-anim { transform: translateY(70px); }
+.bi-hero[data-text="zoom"] .bi-hero-slide .bi-anim { transform: scale(.6); }
+.bi-hero[data-text="blur"] .bi-hero-slide .bi-anim { transform: scale(1.08); filter: blur(14px); }
+.bi-hero[data-text="blur"] .bi-hero-slide .bi-hero-title { letter-spacing: .5em; }
+
+/* arrived: must beat every entrance rule above (same or higher specificity, later in the file) */
+.bi-hero .bi-hero-slide.is-active .bi-anim, .bi-hero[data-text][data-dir] .bi-hero-slide.is-active .bi-anim { opacity: 1; transform: none; filter: none; }
+.bi-hero .bi-hero-slide.is-active .bi-hero-title, .bi-hero[data-text] .bi-hero-slide.is-active .bi-hero-title { letter-spacing: .14em; }
+.bi-hero .bi-hero-slide.is-active .bi-anim:nth-child(1) { transition-delay: .7s; }
+.bi-hero .bi-hero-slide.is-active .bi-anim:nth-child(2) { transition-delay: .9s; }
+.bi-hero .bi-hero-slide.is-active .bi-anim:nth-child(3) { transition-delay: 1.1s; }
+.bi-hero .bi-hero-slide.is-leaving .bi-anim { opacity: 0; transform: none; filter: none; transition-duration: .5s, 0s, 0s, 0s; transition-delay: 0s; }
 
 /* controls */
-.bi-hero-controls { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 5; display: flex; align-items: center; gap: 16px; padding: 10px 14px; border-radius: 40px; background: rgba(0,25,42,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.12); }
+.bi-hero-controls { position: absolute; right: 110px; bottom: 24px; z-index: 5;   /* clear of the chat button */ display: flex; align-items: center; gap: 16px; padding: 10px 14px; border-radius: 40px; background: rgba(10,22,45,.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.12); }
 .bi-hero-prev, .bi-hero-next { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background .3s, border-color .3s; }
 .bi-hero-prev:hover, .bi-hero-next:hover { background: #ea4400; border-color: #ea4400; }
 .bi-hero-count { color: rgba(255,255,255,.6); font-size: 13px; font-weight: 600; letter-spacing: .1em; min-width: 62px; text-align: center; }
@@ -225,25 +280,31 @@
 .bi-hero.is-paused .bi-hero-bar.is-active i::after { animation-play-state: paused; }
 @keyframes biHeroBar { from { width: 0; } to { width: 100%; } }
 
-/* tablet / mobile: image on top, text below */
+/* laptops: text a bit wider */
+@media (max-width: 1199px) {
+    .bi-hero-content { width: max(var(--bi-hero-w, 50%), 50%); padding-left: 6%; }
+    .bi-hero-slide.is-right .bi-hero-content { padding-right: 6%; }
+}
+/* tablet / mobile: image stays full; whole slide gets the overlay, text centered */
 @media (max-width: 991px) {
-    .bi-hero { height: auto; min-height: calc(100svh - var(--bi-head, 0px)); }
-    .bi-hero-slide { grid-template-columns: 1fr; grid-template-rows: 42% 58%; }
-    .bi-hero-slide.is-reverse .bi-hero-media { order: 1; }
-    .bi-hero-slide.is-reverse .bi-hero-content { order: 2; justify-content: flex-start; text-align: left; }
-    .bi-hero-slide.is-reverse .bi-hero-tag { flex-direction: row; }
-    .bi-hero-slide.is-reverse .bi-hero-actions { justify-content: flex-start; }
-    .bi-hero-media, .bi-hero-slide.is-reverse .bi-hero-media { clip-path: inset(0 0 100% 0); }
-    .bi-hero-content, .bi-hero-slide.is-reverse .bi-hero-content { clip-path: inset(100% 0 0 0); padding: 34px 24px 100px; align-items: flex-start; }
-    .bi-hero-shade, .bi-hero-slide.is-reverse .bi-hero-shade { background: linear-gradient(0deg, rgba(0,35,58,.6), rgba(0,35,58,0) 50%); }
-    .bi-hero-content::before { display: none; }
+    .bi-hero { aspect-ratio: auto; height: auto; min-height: calc(100svh - var(--bi-head, 0px)); }
+    .bi-hero-controls { right: auto; left: 50%; transform: translateX(-50%); }
+    .bi-hero-slide.is-left .bi-hero-shade, .bi-hero-slide.is-right .bi-hero-shade { background: linear-gradient(180deg, rgba(var(--bi-hero-shade), .45) 0%, rgba(var(--bi-hero-shade), .88) 45%, rgba(var(--bi-hero-shade), .94) 100%); }
+    .bi-hero-content, .bi-hero-slide.is-right .bi-hero-content, .bi-hero-slide.pos-lower .bi-hero-content { left: 0; right: 0; width: auto; align-items: flex-end; padding: 40px 24px 110px; }
+    .bi-hero-slide.is-left .bi-hero-inner { margin: 0 auto; }
+    .bi-hero-inner { margin: 0 auto; }
+    .bi-hero-slide.is-left .bi-hero-text, .bi-hero-slide.is-right .bi-hero-text { text-align: center; }
+    .bi-hero-title { letter-spacing: .08em; margin-bottom: 18px; }
+    .bi-hero-text { margin-bottom: 26px; }
+    .bi-hero-slide.from-left .bi-anim, .bi-hero[data-text="side"][data-dir="left"] .bi-hero-slide .bi-anim { transform: translateX(-70px); }
+    .bi-hero-slide.from-right .bi-anim, .bi-hero[data-text="side"][data-dir="right"] .bi-hero-slide .bi-anim { transform: translateX(70px); }
+    .bi-hero .bi-hero-slide.is-active .bi-anim, .bi-hero[data-text][data-dir] .bi-hero-slide.is-active .bi-anim { transform: none; }
 }
 @media (max-width: 576px) {
     .bi-hero-controls { gap: 10px; padding: 8px 10px; bottom: 18px; }
     .bi-hero-bar { width: 26px; }
     .bi-hero-prev, .bi-hero-next { width: 34px; height: 34px; }
-    .bi-hero-actions { gap: 18px; }
-    .bi-hero-btn { padding: 13px 22px; }
+    .bi-hero-text { font-size: 15px; line-height: 1.7; }
 }
 @media (prefers-reduced-motion: reduce) {
     .bi-hero *, .bi-hero *::after { transition-duration: .01ms !important; animation: none !important; }

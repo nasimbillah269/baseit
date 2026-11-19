@@ -1,21 +1,20 @@
 @php($slides = config('baseit.slides'))
-<!-- Hero Slider: full screen, split image / content, side alternates every slide -->
+{{-- Hero Slider: full-width image on every slide; the text sits on the image's empty side and
+     slides in from the left on one slide and from the right on the next ("reverse" animation). --}}
 <section class="bi-hero" id="biHero" aria-roledescription="carousel" aria-label="BASE IT services">
     @foreach($slides as $i=>$slide)
-    <div class="bi-hero-slide {{$i % 2 ? 'is-reverse' : ''}} {{$i==0 ? 'is-active' : ''}}" role="group" aria-roledescription="slide" aria-label="{{$i+1}} of {{count($slides)}}" @if($i) aria-hidden="true" @endif>
-        <div class="bi-hero-media">
-            <div class="bi-hero-img" style="background-image:url('{{bimg($slide['img'])}}')"></div>
-            <div class="bi-hero-shade"></div>
-        </div>
-        <div class="bi-hero-content">
-            <span class="bi-hero-num" aria-hidden="true">{{str_pad($i+1, 2, '0', STR_PAD_LEFT)}}</span>
+    @php($side = ($slide['side'] ?? 'left') === 'right' ? 'right' : 'left')
+    <div class="bi-hero-slide is-{{$side}} pos-{{$slide['pos'] ?? 'center'}} {{$i % 2 ? 'from-right' : 'from-left'}} {{$i==0 ? 'is-active' : ''}}"
+         @if(!empty($slide['effect'])) data-effect="{{$slide['effect']}}" @endif @if(!empty($slide['text_effect'])) data-text="{{$slide['text_effect']}}" @endif
+         role="group" aria-roledescription="slide" aria-label="{{$i+1}} of {{count($slides)}}" @if($i) aria-hidden="true" @endif>
+        <div class="bi-hero-bg" style="background-image:url('{{bimg($slide['img'])}}'); background-position: {{$slide['bg_pos'] ?? 'center'}};"></div>
+        <div class="bi-hero-shade"></div>
+        <div class="bi-hero-content" @if(!empty($slide['width'])) style="--bi-hero-w: {{(int) $slide['width']}}%" @endif>
             <div class="bi-hero-inner">
-                <span class="bi-hero-tag bi-anim">{{$slide['tag'] ?? config('baseit.company.name')}}</span>
                 <h2 class="bi-hero-title bi-anim">{{$slide['title']}}</h2>
                 <p class="bi-hero-text bi-anim">{{$slide['text']}}</p>
                 <div class="bi-hero-actions bi-anim">
-                    <a href="{{bpage($slide['slug'])}}" class="bi-hero-btn">Read More <i class="fas fa-arrow-right"></i></a>
-                    <a href="{{bpage('contact-us')}}" class="bi-hero-link">Contact Us</a>
+                    <a href="{{bpage($slide['slug'])}}" class="bi-hero-more">Read More</a>
                 </div>
             </div>
         </div>

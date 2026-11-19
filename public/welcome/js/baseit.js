@@ -127,6 +127,11 @@
         var interval = 7000;      // keep in sync with --bi-hero-time
         var transition = 1300;    // longest panel transition
         var current = 0, timer = null, busy = false, paused = false, remaining = interval, startedAt = 0;
+        var autoTurn = 0;         // autoplay alternates direction: right->left, then left->right ("parallax" left/right)
+        // every change uses the next effect / text entrance (a slide can force one with data-effect / data-text)
+        var effects = ['parallax', 'curtain', 'zoom', 'parallaxv', 'fadedark'];
+        var texts = ['side', 'up', 'zoom', 'blur'];
+        var moveNo = 0;
 
         if (total < 2) { $hero.find('.bi-hero-controls').hide(); return; }
 
@@ -144,10 +149,11 @@
           clearTimeout(timer);
           remaining = ms;
           startedAt = Date.now();
-          timer = setTimeout(function () { go(current + 1); }, ms);
+          timer = setTimeout(function () { go(current + 1, (autoTurn++ % 2) ? 'left' : 'right'); }, ms);
         };
 
-        var go = function (next) {
+        // dir = side the NEW slide comes in from: 'right' (moves right->left) or 'left' (moves left->right)
+        var go = function (next, dir) {
           next = (next + total) % total;
           if (next === current) return;
           if (busy) { if (!paused) schedule(400); return; }   // mid-transition: try again shortly, never stall
@@ -155,6 +161,14 @@
 
           var $old = $slides.eq(current);
           var $new = $slides.eq(next);
+
+          $hero.attr({
+            'data-dir': dir || 'right',
+            'data-effect': $new.data('effect') || effects[moveNo % effects.length],
+            'data-text': $new.data('text') || texts[moveNo % texts.length]
+          }).addClass('has-moved');
+          moveNo++;
+          void $hero[0].offsetWidth;   // make sure the new direction is applied before the animation starts
 
           $old.removeClass('is-active').addClass('is-leaving').attr('aria-hidden', 'true');
           $new.addClass('is-active').removeAttr('aria-hidden');
@@ -170,9 +184,9 @@
           if (!paused) schedule(interval);
         };
 
-        $hero.on('click', '.bi-hero-next', function () { go(current + 1); });
-        $hero.on('click', '.bi-hero-prev', function () { go(current - 1); });
-        $hero.on('click', '.bi-hero-bar', function () { go(+$(this).data('index')); });
+        $hero.on('click', '.bi-hero-next', function () { go(current + 1, 'right'); });
+        $hero.on('click', '.bi-hero-prev', function () { go(current - 1, 'left'); });
+        $hero.on('click', '.bi-hero-bar', function () { var i = +$(this).data('index'); go(i, i > current ? 'right' : 'left'); });
 
         // Autoplay never pauses on hover: the hero fills the screen, so a hover-pause made it look stuck
         // (and on phones a tap fires mouseenter without a mouseleave, freezing it for good).
@@ -181,8 +195,8 @@
         $(document).on('keydown', function (e) {
           var r = $hero[0].getBoundingClientRect();
           if (r.bottom < 0 || r.top > window.innerHeight) return;
-          if (e.key === 'ArrowRight') go(current + 1);
-          if (e.key === 'ArrowLeft') go(current - 1);
+          if (e.key === 'ArrowRight') go(current + 1, 'right');
+          if (e.key === 'ArrowLeft') go(current - 1, 'left');
         });
 
         // swipe on touch devices
@@ -191,7 +205,7 @@
         $hero.on('touchend', function (e) {
           if (touchX === null) return;
           var dx = e.originalEvent.changedTouches[0].clientX - touchX;
-          if (Math.abs(dx) > 50) go(current + (dx < 0 ? 1 : -1));
+          if (Math.abs(dx) > 50) go(current + (dx < 0 ? 1 : -1), dx < 0 ? 'right' : 'left');
           touchX = null;
         });
 
